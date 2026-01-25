@@ -49,7 +49,19 @@ RUN mkdir -p cstrike/logs
 RUN cp -a cstrike cstrike_defaults
 
 # Setup the entrypoint script
-COPY --chmod=0755 entrypoint.sh /entrypoint.sh
+#COPY --chmod=0755 entrypoint.sh /entrypoint.sh
+
+RUN <<EOF cat > /entrypoint.sh && chmod +x /entrypoint.sh
+#!/bin/sh
+set -e
+
+if [ -z "\$(ls -A /opt/hlds/cstrike 2>/dev/null)" ]; then
+  echo "Initializing cstrike directory"
+  cp -a /opt/hlds/cstrike_defaults/. /opt/hlds/cstrike/
+fi
+
+exec "\$@"
+EOF
 ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 27015/udp 27015/tcp
