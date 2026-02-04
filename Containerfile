@@ -44,9 +44,10 @@ RUN wget https://github.com/rehlds/ReHLDS/releases/download/${REHLDS_VER}/rehlds
 
 # Download and install ReGameDLL
 RUN wget https://github.com/rehlds/ReGameDLL_CS/releases/download/${REGAMEDLL_VER}/regamedll-bin-${REGAMEDLL_VER}.zip && \
-    unzip -q regamedll-bin-${REGAMEDLL_VER}.zip && \
-    cp regamedll-bin-${REGAMEDLL_VER}/bin/linux32/cstrike/* cstrike/ \
-    rm regamedll-bin-${REGAMEDLL_VER} regamedll-bin-${REGAMEDLL_VER}.zip
+    mkdir -p regamedll-bin-${REGAMEDLL_VER} && \
+    unzip -q regamedll-bin-${REGAMEDLL_VER}.zip -d regamedll-bin-${REGAMEDLL_VER} && \
+    cp -r regamedll-bin-${REGAMEDLL_VER}/bin/linux32/cstrike/* cstrike/ && \
+    rm -rf regamedll-bin-${REGAMEDLL_VER} regamedll-bin-${REGAMEDLL_VER}.zip
 
 # Fix liblist.game crash issue
 RUN cd cstrike && ln -s dlls/cs.so dlls/cs_i386.so
