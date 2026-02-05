@@ -1,7 +1,7 @@
 services:
     cs_1.6:
         build: .
-        container_name: CS_1.6
+        container_name: CS_1.6_Competitive
         ports:
             - "27015:27015/udp"
             - "27015:27015/tcp"
