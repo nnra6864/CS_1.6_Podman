@@ -2,6 +2,7 @@ FROM docker.io/cm2network/steamcmd:latest
 
 ARG REHLDS_VER=3.14.0.857
 ARG REGAMEDLL_VER=5.28.0.756
+ARG REAPI_VER=5.26.0.338
 ARG METAMOD_VER=1.21p38
 ARG AMXX_VER=1.10.0-git5474
 
@@ -65,6 +66,11 @@ RUN wget https://www.amxmodx.org/amxxdrop/1.10/amxmodx-${AMXX_VER}-base-linux.ta
     tar -xzf amxmodx-${AMXX_VER}-base-linux.tar.gz -C cstrike/ && \
     tar -xzf amxmodx-${AMXX_VER}-cstrike-linux.tar.gz -C cstrike/ && \
     rm amxmodx-*.tar.gz
+
+# Download and install ReAPI
+RUN wget https://github.com/rehlds/ReAPI/releases/download/${REAPI_VER}/reapi-bin-${REAPI_VER}.zip && \
+    unzip -q reapi-bin-${REAPI_VER}.zip -d cstrike/ && \
+    rm reapi-bin-${REAPI_VER}.zip
 
 # Create logs dir
 RUN mkdir -p cstrike/logs

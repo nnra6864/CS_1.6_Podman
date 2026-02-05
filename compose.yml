@@ -1,6 +1,5 @@
 services:
     cs_1.6:
-        build: .
         container_name: CS_1.6
         ports:
             - "27015:27015/udp"
@@ -8,3 +7,12 @@ services:
         volumes:
             - ./cstrike:/opt/hlds/cstrike:U
         restart: always
+        build: .
+        command: >
+            ./hlds_run
+            -game cstrike
+            +ip 0.0.0.0
+            +map de_dust2
+            +maxplayers 32
+            +sv_lan 0
+            +exec server.cfg
