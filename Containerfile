@@ -75,6 +75,35 @@ RUN wget https://github.com/rehlds/ReAPI/releases/download/${REAPI_VER}/reapi-bi
 # Create logs dir
 RUN mkdir -p cstrike/logs
 
+# Replace the builtin server config
+RUN <<EOF cat > cstrike/server.cfg
+// Use this file to configure your DEDICATED server.
+// This config file is executed on server start.
+
+// disable autoaim
+sv_aim 0
+
+// disable clients' ability to pause the server
+pausable 0
+
+// default server name. Change to "Bob's Server", etc.
+hostname "Counter-Strike 1.6 Server"
+
+// maximum client movement speed
+sv_maxspeed 320
+
+// 20 minute timelimit
+mp_timelimit 20
+
+sv_cheats 0
+
+// load ban files
+exec listip.cfg
+exec banned.cfg
+
+mp_consistency 0
+EOF
+
 # Clone cstrike for preserving default values
 RUN cp -a cstrike cstrike_defaults
 
