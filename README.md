@@ -1,12 +1,20 @@
 This is a podman container made for cs 1.6 servers using:
 
-1. [ReHLDS](https://rehlds.dev/)
-2. [ReGameDLL](https://rehlds.dev/docs/regamedll-cs/)
-3. [Metamod-P](https://metamod-p.sourceforge.net/), although this might change to [Metamod-R](https://github.com/rehlds/Metamod-R)
-4. [AMX Mod X](https://www.amxmodx.org/)
-5. [ReAPI](https://github.com/rehlds/reapi)
+1. [pasta](https://passt.top/passt/about/)
+2. [ReHLDS](https://rehlds.dev/)
+3. [ReGameDLL](https://rehlds.dev/docs/regamedll-cs/)
+4. [Metamod-P](https://metamod-p.sourceforge.net/), although this might change to [Metamod-R](https://github.com/rehlds/Metamod-R)
+5. [AMX Mod X](https://www.amxmodx.org/)
+6. [ReAPI](https://github.com/rehlds/reapi)
 
 # Usage
+
+## Install pasta
+
+Arch
+```sh
+sudo pacman -S passt
+```
 
 ## Building
 
