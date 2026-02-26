@@ -1,5 +1,6 @@
 services:
     cs_1.6:
+        network_mode: "pasta"
         container_name: CS_1.6
         ports:
             - "27015:27015/udp"
