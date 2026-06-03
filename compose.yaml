@@ -6,7 +6,7 @@ services:
             - "27015:27015/udp"
             - "27015:27015/tcp"
         volumes:
-            - ./cstrike:/opt/hlds/cstrike:U
+            - ./cstrike:/opt/hlds/cstrike:U,Z
         restart: always
         build: .
         command: >
