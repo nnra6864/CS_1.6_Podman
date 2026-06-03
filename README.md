@@ -13,7 +13,7 @@ This is a podman container made for cs 1.6 servers using:
 
 Arch
 ```sh
-sudo pacman -S passt
+sudo pacman -S podman passt docker-compose
 ```
 
 ## Building
@@ -21,7 +21,7 @@ sudo pacman -S passt
 Everything is automated, simply run:
 
 ```sh
-podman-compose build
+podman compose build
 ```
 
 This might take a few minutes depending on your disk and network speeds.
@@ -31,7 +31,7 @@ This might take a few minutes depending on your disk and network speeds.
 Configure `compose.yml` and run:
 
 ```sh
-podman-compose up -d
+podman compose up -d
 ```
 
 ## Configuring
@@ -54,5 +54,5 @@ podman unshare
 ## Stopping
 
 ```sh
-podman-compose down
+podman compose down
 ```
