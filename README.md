@@ -13,7 +13,7 @@ This is a podman container made for cs 1.6 servers using:
 
 Arch
 ```sh
-sudo pacman -S podman passt docker-compose
+sudo pacman -S podman passt
 ```
 
 ## Building
