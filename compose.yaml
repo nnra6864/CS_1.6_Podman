@@ -19,8 +19,17 @@ services:
         # Automatically restart on reboot
         restart: always
 
+        # Keep the exact IDs so we can easily edit files owned by the steam user
+        userns_mode: "keep-id"
+
         # Build and run
-        build: .
+        build:
+            context: .
+            args:
+                # run `id -u` on your host — override here if it's not 1000
+                UID: "1000"
+                # run `id -g` on your host — override here if it's not 1000
+                GID: "1000"
         command: >
             ./hlds_run
             -game cstrike

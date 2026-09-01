@@ -35,7 +35,7 @@ RUN wget https://github.com/rehlds/ReGameDLL_CS/releases/download/${REGAMEDLL_VE
     rm -rf regamedll-bin-${REGAMEDLL_VER}.zip /tmp/regamedll-bin
 
 # Fix liblist.game crash issue (metamod's gamedll auto-detect expects cs_i386.so)
-RUN cd cstrike && ln -s dlls/cs.so dlls/cs_i386.so
+RUN cd cstrike/dlls && ln -s cs.so cs_i386.so
 
 # Download and install Metamod-r
 RUN wget https://github.com/rehlds/Metamod-r/releases/download/${METAMOD_VER}/metamod-bin-${METAMOD_VER}.zip && \
@@ -101,15 +101,19 @@ RUN cp -a cstrike cstrike_defaults
 # Stage 2: minimal runtime
 FROM debian:bookworm-slim AS runtime
 
+ARG UID=1000
+ARG GID=1000
+
 RUN dpkg --add-architecture i386 && \
     apt-get update && \
     apt-get install -y --no-install-recommends libc6:i386 libstdc++6:i386 lib32gcc-s1 && \
     rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m -u 1000 -s /bin/sh steam
+RUN groupadd -g ${GID} steam && useradd -m -u ${UID} -g ${GID} -s /bin/sh steam
 
 WORKDIR /opt/hlds
-COPY --from=fetch --chown=steam:steam /opt/hlds /opt/hlds
+COPY --from=fetch --chown=${UID}:${GID} /opt/hlds /opt/hlds
+COPY --from=fetch --chown=${UID}:${GID} /home/steam/.steam /home/steam/.steam
 
 RUN <<'EOF' cat > /opt/hlds/entrypoint.sh && chmod +x /opt/hlds/entrypoint.sh && chown steam:steam /opt/hlds/entrypoint.sh
 #!/bin/sh
