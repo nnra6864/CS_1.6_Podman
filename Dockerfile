@@ -1,32 +1,16 @@
-FROM docker.io/cm2network/steamcmd:latest
+# Stage 1: fetch everything via SteamCMD
+FROM docker.io/cm2network/steamcmd:latest AS fetch
 
-ARG REHLDS_VER=3.14.0.857
-ARG REGAMEDLL_VER=5.28.0.756
-ARG REAPI_VER=5.26.0.338
-ARG METAMOD_VER=1.21p38
+ARG REHLDS_VER=3.15.0.896
+ARG REGAMEDLL_VER=5.30.0.814
+ARG REAPI_VER=5.29.0.358
+ARG METAMOD_VER=1.3.0.149
 ARG AMXX_VER=1.10.0-git5474
 
 WORKDIR /opt/hlds
 
-# Install required tools
 USER root
 RUN apt-get update && apt-get install -y wget unzip xz-utils lib32gcc-s1 && rm -rf /var/lib/apt/lists/*
-
-# Setup the entrypoint script
-RUN <<EOF cat > /entrypoint.sh && chmod +x /entrypoint.sh
-#!/bin/sh
-set -e
-
-if [ -z "\$(ls -A /opt/hlds/cstrike 2>/dev/null)" ]; then
-  echo "Initializing cstrike directory"
-  cp -a /opt/hlds/cstrike_defaults/. /opt/hlds/cstrike/
-fi
-
-exec "\$@"
-EOF
-ENTRYPOINT ["/entrypoint.sh"]
-
-# Switch to the steam user
 RUN chown -R steam:steam /opt/hlds
 USER steam
 
@@ -45,26 +29,28 @@ RUN wget https://github.com/rehlds/ReHLDS/releases/download/${REHLDS_VER}/rehlds
 
 # Download and install ReGameDLL
 RUN wget https://github.com/rehlds/ReGameDLL_CS/releases/download/${REGAMEDLL_VER}/regamedll-bin-${REGAMEDLL_VER}.zip && \
-    mkdir -p regamedll-bin-${REGAMEDLL_VER} && \
-    unzip -q regamedll-bin-${REGAMEDLL_VER}.zip -d regamedll-bin-${REGAMEDLL_VER} && \
-    cp -r regamedll-bin-${REGAMEDLL_VER}/bin/linux32/cstrike/* cstrike/ && \
-    rm -rf regamedll-bin-${REGAMEDLL_VER} regamedll-bin-${REGAMEDLL_VER}.zip
+    mkdir -p /tmp/regamedll-bin && \
+    unzip -q regamedll-bin-${REGAMEDLL_VER}.zip -d /tmp/regamedll-bin && \
+    cp -r /tmp/regamedll-bin/bin/linux32/cstrike/* cstrike/ && \
+    rm -rf regamedll-bin-${REGAMEDLL_VER}.zip /tmp/regamedll-bin
 
-# Fix liblist.game crash issue
+# Fix liblist.game crash issue (metamod's gamedll auto-detect expects cs_i386.so)
 RUN cd cstrike && ln -s dlls/cs.so dlls/cs_i386.so
 
-# Download and install Metamod-P
-RUN wget https://github.com/Bots-United/metamod-p/releases/download/v${METAMOD_VER}/metamod_i686_linux_win32-${METAMOD_VER}.tar.xz && \
-    mkdir -p cstrike/addons/metamod && \
-    tar -xJf metamod_i686_linux_win32-${METAMOD_VER}.tar.xz -C cstrike/addons/ && \
-    rm metamod_i686_linux_win32-${METAMOD_VER}.tar.xz && \
-    echo 'linux addons/metamod/metamod_i386.so' > cstrike/addons/metamod/plugins.ini
+# Download and install Metamod-r
+RUN wget https://github.com/rehlds/Metamod-r/releases/download/${METAMOD_VER}/metamod-bin-${METAMOD_VER}.zip && \
+    mkdir -p /tmp/metamod-bin && \
+    unzip -q metamod-bin-${METAMOD_VER}.zip -d /tmp/metamod-bin && \
+    cp -r /tmp/metamod-bin/addons cstrike/ && \
+    rm -rf metamod-bin-${METAMOD_VER}.zip /tmp/metamod-bin && \
+    sed -i 's|gamedll_linux "dlls/cs\.so"|gamedll_linux "addons/metamod/metamod_i386.so"|' cstrike/liblist.gam
 
 # Download and install AMX Mod X
 RUN wget https://www.amxmodx.org/amxxdrop/1.10/amxmodx-${AMXX_VER}-base-linux.tar.gz && \
     wget https://www.amxmodx.org/amxxdrop/1.10/amxmodx-${AMXX_VER}-cstrike-linux.tar.gz && \
     tar -xzf amxmodx-${AMXX_VER}-base-linux.tar.gz -C cstrike/ && \
     tar -xzf amxmodx-${AMXX_VER}-cstrike-linux.tar.gz -C cstrike/ && \
+    echo 'linux addons/amxmodx/dlls/amxmodx_mm_i386.so' > cstrike/addons/metamod/plugins.ini && \
     rm amxmodx-*.tar.gz
 
 # Download and install ReAPI
@@ -72,11 +58,10 @@ RUN wget https://github.com/rehlds/ReAPI/releases/download/${REAPI_VER}/reapi-bi
     unzip -q reapi-bin-${REAPI_VER}.zip -d cstrike/ && \
     rm reapi-bin-${REAPI_VER}.zip
 
-# Create logs dir
 RUN mkdir -p cstrike/logs
 
 # Replace the builtin server config
-RUN <<EOF cat > cstrike/server.cfg
+RUN <<'EOF' cat > cstrike/server.cfg
 // Use this file to configure your DEDICATED server.
 // This config file is executed on server start.
 
@@ -102,10 +87,44 @@ exec listip.cfg
 exec banned.cfg
 
 mp_consistency 0
+
+
+// Disabled camera tilt
+sv_rollangle 0
+sv_rollspeed 0
 EOF
 
 # Clone cstrike for preserving default values
 RUN cp -a cstrike cstrike_defaults
+
+
+# Stage 2: minimal runtime
+FROM debian:bookworm-slim AS runtime
+
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends libc6:i386 libstdc++6:i386 lib32gcc-s1 && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m -u 1000 -s /bin/sh steam
+
+WORKDIR /opt/hlds
+COPY --from=fetch --chown=steam:steam /opt/hlds /opt/hlds
+
+RUN <<'EOF' cat > /opt/hlds/entrypoint.sh && chmod +x /opt/hlds/entrypoint.sh && chown steam:steam /opt/hlds/entrypoint.sh
+#!/bin/sh
+set -e
+
+if [ -z "$(ls -A /opt/hlds/cstrike 2>/dev/null)" ]; then
+  echo "Initializing cstrike directory"
+  cp -a /opt/hlds/cstrike_defaults/. /opt/hlds/cstrike/
+fi
+
+exec "$@"
+EOF
+
+USER steam
+ENTRYPOINT ["/opt/hlds/entrypoint.sh"]
 
 EXPOSE 27015/udp 27015/tcp
 

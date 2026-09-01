@@ -1,13 +1,25 @@
 services:
-    cs_1.6:
-        container_name: CS_1.6
+    counter-strike:
+        container_name: counter-strike
+
+        # Keeps the HLDS console attached
+        stdin_open: true
+        tty: true
+
+        # Pasta results in minimal latency whilst still allowing for port mapping
         network_mode: "pasta"
         ports:
             - "27015:27015/udp"
             - "27015:27015/tcp"
+
+        # Volume where all the files and configs live
         volumes:
             - ./cstrike:/opt/hlds/cstrike:U,Z
+
+        # Automatically restart on reboot
         restart: always
+
+        # Build and run
         build: .
         command: >
             ./hlds_run
