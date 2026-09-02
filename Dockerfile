@@ -95,11 +95,6 @@ exec listip.cfg
 exec banned.cfg
 
 mp_consistency 0
-
-
-// Disabled camera tilt
-sv_rollangle 0
-sv_rollspeed 0
 EOF
 
 # Clone cstrike for preserving default values
