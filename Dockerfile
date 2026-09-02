@@ -23,6 +23,12 @@ RUN /home/steam/steamcmd/steamcmd.sh \
     +app_update 90 -beta steam_legacy validate \
     +quit
 
+# HLDS looks for steamclient.so in ~/.steam/sdk32
+# The base image only symlinks it to steamcmd/linux32, which won't exist in the runtime stage
+# So replace the symlink with a real copy of the file
+RUN rm -f /home/steam/.steam/sdk32/steamclient.so && \
+    cp /home/steam/steamcmd/linux32/steamclient.so /home/steam/.steam/sdk32/steamclient.so
+
 # Download and install ReHLDS
 RUN wget https://github.com/rehlds/ReHLDS/releases/download/${REHLDS_VER}/rehlds-bin-${REHLDS_VER}.zip && \
     unzip -q rehlds-bin-${REHLDS_VER}.zip && \
