@@ -108,7 +108,8 @@ ARG GID=1000
 
 RUN dpkg --add-architecture i386 && \
     apt-get update && \
-    apt-get install -y --no-install-recommends libc6:i386 libstdc++6:i386 lib32gcc-s1 && \
+    apt-get install -y --no-install-recommends libc6:i386 libstdc++6:i386 lib32gcc-s1 ca-certificates && \
+    update-ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g ${GID} steam && useradd -m -u ${UID} -g ${GID} -s /bin/sh steam
