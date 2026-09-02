@@ -1,6 +1,6 @@
 services:
     counter-strike:
-        container_name: counter-strike
+        container_name: counter-strike-competitive
 
         # Keeps the HLDS console attached
         stdin_open: true
@@ -38,6 +38,6 @@ services:
             -game cstrike
             +ip 0.0.0.0
             +map de_dust2
-            +maxplayers 32
+            +maxplayers 10
             +sv_lan 0
             +exec server.cfg

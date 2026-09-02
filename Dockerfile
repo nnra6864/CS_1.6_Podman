@@ -70,31 +70,28 @@ RUN mkdir -p cstrike/logs
 
 # Replace the builtin server config
 RUN <<'EOF' cat > cstrike/server.cfg
-// Use this file to configure your DEDICATED server.
-// This config file is executed on server start.
-
-// disable autoaim
+hostname "Competitive"
+rcon_password "password"
 sv_aim 0
+sv_cheats 0
 
 // disable clients' ability to pause the server
 pausable 0
-
-// default server name. Change to "Bob's Server", etc.
-hostname "Counter-Strike 1.6 Server"
-
-// maximum client movement speed
-sv_maxspeed 320
-
-// 20 minute timelimit
-mp_timelimit 20
-
-sv_cheats 0
 
 // load ban files
 exec listip.cfg
 exec banned.cfg
 
-mp_consistency 0
+// time settings
+mp_timelimit 999
+mp_freezetime 15
+mp_roundtime 1.75
+mp_c4timer 35
+mp_buytime 0.25
+
+mp_forcecamera 2
+mp_friendlyfire 1
+sv_maxspeed 320
 EOF
 
 # Clone cstrike for preserving default values
@@ -136,4 +133,4 @@ ENTRYPOINT ["/opt/hlds/entrypoint.sh"]
 
 EXPOSE 27015/udp 27015/tcp
 
-CMD ["./hlds_run", "-game", "cstrike", "+ip", "0.0.0.0", "+map", "de_dust2", "+maxplayers", "32", "+sv_lan", "0"]
+CMD ["./hlds_run", "-game", "cstrike", "+ip", "0.0.0.0", "+map", "de_dust2", "+maxplayers", "10", "+sv_lan", "0"]

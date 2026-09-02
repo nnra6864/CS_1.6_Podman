@@ -55,11 +55,11 @@ podman compose down
 
 You can easily access the server console by running:
 ```sh
-podman attach counter-strike
+podman attach counter-strike-competitive
 ```
 
 > [!NOTE]
-> Replace `counter-strike` with your container name.
+> Replace `counter-strike-competitive` with your container name.
 
 > [!NOTE]
 > To detach from the console without killing the server, press `CTRL + P` followed by `CTRL + Q`.
