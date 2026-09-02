@@ -19,7 +19,8 @@ RUN /home/steam/steamcmd/steamcmd.sh \
     +force_install_dir /opt/hlds \
     +login anonymous \
     +app_set_config 90 mod cstrike \
-    +app_update 90 validate \
+    # Using pre-aniversary build of HLDS as that's what ReHLDS supports
+    +app_update 90 -beta steam_legacy validate \
     +quit
 
 # Download and install ReHLDS
