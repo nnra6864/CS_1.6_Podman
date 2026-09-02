@@ -6,6 +6,9 @@ services:
         stdin_open: true
         tty: true
 
+        # Fixes the 10 second delay when stopping and SIGKILL
+        init: true
+
         # Pasta results in minimal latency whilst still allowing for port mapping
         network_mode: "pasta"
         ports:
