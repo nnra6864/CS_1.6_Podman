@@ -9,7 +9,7 @@ This is a podman container made for cs 1.6 servers using:
 
 # Usage
 
-## Install pasta
+## Dependencies
 
 Arch
 ```sh
@@ -28,7 +28,7 @@ This might take a few minutes depending on your disk and network speeds.
 
 ## Running
 
-Configure `compose.yml` and run:
+Configure `compose.yaml` and run:
 
 ```sh
 podman compose up -d
@@ -36,19 +36,13 @@ podman compose up -d
 
 ## Configuring
 
-While some configuration is available in `compose.yml`, most config files and directories are found in the `cstrike` dir.
+While some configuration is available in `compose.yaml`, most config files and directories are found in the `cstrike` dir.
 To locate it, look at your `compose.yml`.
 By default, it should be in the same directory as the compose file:
 
 ```yml
 volumes:
-    - ./cstrike:/opt/hlds/cstrike:U
-```
-
-Keep in mind that all edits will require sudo, or simply switching to the podman user:
-
-```sh
-podman unshare
+    - ./cstrike:/opt/hlds/cstrike:U,Z
 ```
 
 ## Stopping
@@ -57,7 +51,29 @@ podman unshare
 podman compose down
 ```
 
-# ☦ Ι̅Ϲ̅ Χ̅Ϲ̅ ΝΙΚΑ — Ὁ Ὤν
+## Console
+
+You can easily access the server console by running:
+```sh
+podman attach counter-strike
+```
+
+> [!NOTE]
+> Replace `counter-strike` with your container name.
+
+> [!NOTE]
+> To detach from the console without killing the server, press `CTRL + P` followed by `CTRL + Q`.
+
+# ☦
+
+```
+   Ὤ
+ Ὁ   Ν
+Ι̅Ϲ̅ │ Χ̅Ϲ̅
+───┼───
+ΝΙ │ ΚΑ
+   ☦
+```
 
 Εἰς δόξαν τοῦ Θεοῦ<br>
 *To the glory of God*
