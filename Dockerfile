@@ -26,7 +26,8 @@ RUN /home/steam/steamcmd/steamcmd.sh \
 # Download and install ReHLDS
 RUN wget https://github.com/rehlds/ReHLDS/releases/download/${REHLDS_VER}/rehlds-bin-${REHLDS_VER}.zip && \
     unzip -q rehlds-bin-${REHLDS_VER}.zip && \
-    rm rehlds-bin-${REHLDS_VER}.zip
+    cp -r bin/linux32/* ./ && \
+    rm -rf rehlds-bin-${REHLDS_VER}.zip bin
 
 # Download and install ReGameDLL
 RUN wget https://github.com/rehlds/ReGameDLL_CS/releases/download/${REGAMEDLL_VER}/regamedll-bin-${REGAMEDLL_VER}.zip && \
